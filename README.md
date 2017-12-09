@@ -6,7 +6,7 @@ This prototype implements the online adaptive stratified reservoir sampling ([OA
 ### Build
 
 Building Spark-based StreamApprox is the same as building Apache Spark.
-See [scripts] (https://github.com/streamapprox/flink-setup) for Spark/Flink building and installation instructions.
+See [scripts](https://github.com/streamapprox/flink-setup) for Spark/Flink building and installation instructions.
 
 ### Usage
 
@@ -27,7 +27,7 @@ Users can use this function as a PairRDD function of Spark.
 
 ### Support
 * If you have any question please shoot me an email: do.le_quoc@tu-dresden.de
-* Note that we are currently working to adapt our implementation with new version (kafka-0-10) of the Spark Kafka connector.
+* Note that we are currently working to adapt our implementation with the new version (kafka-0-10) of Spark-Kafka connector.
 
 ### License
 Published under GNU General Public License v2.0 (GPLv2), see [LICENSE](LICENSE)
