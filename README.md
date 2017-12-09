@@ -1,99 +1,33 @@
-# Apache Spark
+Spark-based StreamApprox
+========================
 
-Spark is a fast and general cluster computing system for Big Data. It provides
-high-level APIs in Scala, Java, Python, and R, and an optimized engine that
-supports general computation graphs for data analysis. It also supports a
-rich set of higher-level tools including Spark SQL for SQL and DataFrames,
-MLlib for machine learning, GraphX for graph processing,
-and Spark Streaming for stream processing.
+This prototype implements the online adaptive stratified reservoir sampling ([OASRS] (https://dl.acm.org/citation.cfm?id=3135989&CFID=1011170257&CFTOKEN=36003206)) algorithm using Spark 2.0.2
 
-<http://spark.apache.org/>
+### Build
+
+Building Spark-based StreamApprox is the same as building Apache Spark.
+See [scripts] (https://github.com/streamapprox/flink-setup) for Spark/Flink building and installation instructions.
+
+### Usage
+
+This prototype supports a sampling function reservoirStratifiedSample() for Spark RDD by implementing the OASRS algorithm.
+Users can use this function as a PairRDD function of Spark.
 
 
-## Online Documentation
+```scala
+    val inputStream = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
-You can find the latest Spark documentation, including a programming
-guide, on the [project web page](http://spark.apache.org/documentation.html)
-and [project wiki](https://cwiki.apache.org/confluence/display/SPARK).
-This README file only contains basic setup instructions.
+    //Take a sample using the OASRS algorithm
+    val sampleItems = inputStream.map(_._2)
+      .map(line => (line.split(",")(0), line.split(",")(1).toDouble))
+      .transform(x => x.reservoirStratifiedSample(sampleSize))
+      .reduceByKeyAndWindow((a: Double, b: Double) => (a + b), Seconds(10), Seconds(5))
+    sampleItems.print()
+```
 
-## Building Spark
+### Support
+* If you have any question please shoot me an email: do.le_quoc@tu-dresden.de
+* Note that we are currently working to adapt our implementation with new version (kafka-0-10) of the Spark Kafka connector.
 
-Spark is built using [Apache Maven](http://maven.apache.org/).
-To build Spark and its example programs, run:
-
-    build/mvn -DskipTests clean package
-
-(You do not need to do this if you downloaded a pre-built package.)
-
-You can build Spark using more than one thread by using the -T option with Maven, see ["Parallel builds in Maven 3"](https://cwiki.apache.org/confluence/display/MAVEN/Parallel+builds+in+Maven+3).
-More detailed documentation is available from the project site, at
-["Building Spark"](http://spark.apache.org/docs/latest/building-spark.html).
-For developing Spark using an IDE, see [Eclipse](https://cwiki.apache.org/confluence/display/SPARK/Useful+Developer+Tools#UsefulDeveloperTools-Eclipse)
-and [IntelliJ](https://cwiki.apache.org/confluence/display/SPARK/Useful+Developer+Tools#UsefulDeveloperTools-IntelliJ).
-
-## Interactive Scala Shell
-
-The easiest way to start using Spark is through the Scala shell:
-
-    ./bin/spark-shell
-
-Try the following command, which should return 1000:
-
-    scala> sc.parallelize(1 to 1000).count()
-
-## Interactive Python Shell
-
-Alternatively, if you prefer Python, you can use the Python shell:
-
-    ./bin/pyspark
-
-And run the following command, which should also return 1000:
-
-    >>> sc.parallelize(range(1000)).count()
-
-## Example Programs
-
-Spark also comes with several sample programs in the `examples` directory.
-To run one of them, use `./bin/run-example <class> [params]`. For example:
-
-    ./bin/run-example SparkPi
-
-will run the Pi example locally.
-
-You can set the MASTER environment variable when running examples to submit
-examples to a cluster. This can be a mesos:// or spark:// URL,
-"yarn" to run on YARN, and "local" to run
-locally with one thread, or "local[N]" to run locally with N threads. You
-can also use an abbreviated class name if the class is in the `examples`
-package. For instance:
-
-    MASTER=spark://host:7077 ./bin/run-example SparkPi
-
-Many of the example programs print usage help if no params are given.
-
-## Running Tests
-
-Testing first requires [building Spark](#building-spark). Once Spark is built, tests
-can be run using:
-
-    ./dev/run-tests
-
-Please see the guidance on how to
-[run tests for a module, or individual tests](https://cwiki.apache.org/confluence/display/SPARK/Useful+Developer+Tools).
-
-## A Note About Hadoop Versions
-
-Spark uses the Hadoop core library to talk to HDFS and other Hadoop-supported
-storage systems. Because the protocols have changed in different versions of
-Hadoop, you must build Spark against the same version that your cluster runs.
-
-Please refer to the build documentation at
-["Specifying the Hadoop Version"](http://spark.apache.org/docs/latest/building-spark.html#specifying-the-hadoop-version)
-for detailed guidance on building for a particular distribution of Hadoop, including
-building for particular Hive and Hive Thriftserver distributions.
-
-## Configuration
-
-Please refer to the [Configuration Guide](http://spark.apache.org/docs/latest/configuration.html)
-in the online documentation for an overview on how to configure Spark.
+### License
+Published under GNU General Public License v2.0 (GPLv2), see [LICENSE](LICENSE)
