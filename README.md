@@ -1,7 +1,7 @@
 Spark-based StreamApprox
 ========================
 
-This prototype implements the online adaptive stratified reservoir sampling ([OASRS] (https://dl.acm.org/citation.cfm?id=3135989&CFID=1011170257&CFTOKEN=36003206)) algorithm using Spark 2.0.2
+This prototype implements the online adaptive stratified reservoir sampling ([OASRS](https://dl.acm.org/citation.cfm?id=3135989&CFID=1011170257&CFTOKEN=36003206)) algorithm using Spark 2.0.2
 
 ### Build
 
